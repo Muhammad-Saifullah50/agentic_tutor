@@ -1,11 +1,23 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# --- Frontend: Next.js ---
+/frontend/node_modules/
+/frontend/.next/
+/frontend/.env*
+/frontend/out/
 
-# Virtual environments
-.venv
-.env
+# --- Backend: uv/FastAPI ---
+/backend/.venv/
+/backend/__pycache__/
+/backend/.env*
+/backend/.mypy_cache/
+/backend/.pytest_cache/
+
+# General
+.DS_Store
+*.log
+*.tsbuildinfo
+*.pem
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.env*
