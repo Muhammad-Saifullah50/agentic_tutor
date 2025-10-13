@@ -26,6 +26,7 @@ async def send_message(request: Request):
     body = await request.json()
     topic = body.get("topic")
     mode = body.get('mode')
+    step = body.get('step')
 
     # todo: send the mode
 

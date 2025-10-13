@@ -1,118 +1,33 @@
 import { StudyMode, Question, Flashcard } from "@/types";
 
-export function generateMockExplanation(topic: string, mode: StudyMode): string {
-  const explanations = {
-    beginner: `# Understanding ${topic}
+export async function generateMockExplanation(topic: string, mode: StudyMode): Promise<string> {
+  // Send the topic and mode to the backend
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        topic: topic.trim(),
+        mode: mode,
+      }),
+    });
 
-Let me break down **${topic}** in simple terms for you.
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-## What is it?
+    const data = await response.json();
+    console.log(data, 'data')
+    return data.explanation
 
-${topic} is a fundamental concept that helps us understand how things work. Think of it as a building block that forms the foundation of more complex ideas.
-
-## Key Points
-
-1. **Foundation**: ${topic} serves as a starting point for learning
-2. **Applications**: It's used in many real-world scenarios
-3. **Importance**: Understanding this concept opens doors to more advanced topics
-
-## Simple Example
-
-Imagine you're learning to ride a bike. ${topic} is like learning to balance first - once you master this basic skill, everything else becomes easier.
-
-## Why It Matters
-
-Understanding ${topic} helps you:
-- Build stronger foundational knowledge
-- Connect related concepts together
-- Apply these ideas in practical situations
-
-Ready to test your understanding? Let's move on to some questions!`,
     
-    practice: `# Deep Dive: ${topic}
-
-Now let's explore **${topic}** with more depth and practical applications.
-
-## Core Concepts
-
-${topic} involves several interconnected ideas that work together to create a comprehensive framework for understanding.
-
-### Key Components
-
-1. **Theoretical Foundation**: The underlying principles that govern ${topic}
-2. **Practical Applications**: How ${topic} is applied in real-world scenarios
-3. **Advanced Considerations**: Edge cases and special situations to be aware of
-
-## Detailed Breakdown
-
-### Primary Aspects
-- **Structure**: How ${topic} is organized and implemented
-- **Functionality**: What ${topic} accomplishes and why it's effective
-- **Integration**: How ${topic} connects with related concepts
-
-### Common Patterns
-
-You'll often see ${topic} used in conjunction with other methodologies to achieve optimal results. Understanding these patterns helps you apply the concept more effectively.
-
-## Practice Applications
-
-Consider scenarios where ${topic} plays a crucial role:
-- Problem-solving situations
-- Decision-making processes
-- Strategic planning contexts
-
-Let's test your understanding with some challenging questions!`,
+  } catch (error) {
+    console.error('Error sending message:', error);
+    // You might want to show an error message to the user here
     
-    exam: `# Comprehensive Analysis: ${topic}
-
-An in-depth examination of **${topic}** covering theoretical foundations, practical applications, and advanced considerations.
-
-## Academic Framework
-
-${topic} represents a significant area of study with far-reaching implications across multiple domains.
-
-### Theoretical Underpinnings
-
-1. **Historical Context**: The evolution of ${topic} and its development over time
-2. **Core Principles**: Fundamental laws and theories that define ${topic}
-3. **Research Foundations**: Key studies and findings that shaped our understanding
-
-## Critical Analysis
-
-### Strengths and Limitations
-
-**Advantages:**
-- Provides robust framework for analysis
-- Enables systematic approach to complex problems
-- Facilitates reproducible results
-
-**Considerations:**
-- Context-dependent effectiveness
-- Requires careful implementation
-- May need adaptation for specific scenarios
-
-### Advanced Applications
-
-${topic} extends beyond basic applications to include:
-- **Cross-disciplinary Integration**: How ${topic} intersects with other fields
-- **Innovation Opportunities**: Ways to advance the field
-- **Future Directions**: Emerging trends and research areas
-
-## Synthesis
-
-Mastering ${topic} requires understanding not just the "what" and "how," but also the "why" and "when." This holistic approach enables you to apply the concept effectively across diverse contexts.
-
-## Critical Thinking
-
-Consider:
-- How does ${topic} compare to alternative approaches?
-- What assumptions underlie the application of ${topic}?
-- How might ${topic} evolve in the future?
-
-Prepare for comprehensive assessment questions that test depth of understanding!`
-  };
-
-  return explanations[mode];
+  }
 }
 
 export function generateMockQuestions(topic: string, mode: StudyMode): Question[] {

@@ -24,31 +24,7 @@ export function HomeView({ onStart, currentMode, onModeChange }: HomeViewProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (topic.trim()) {
-      // Send the topic and mode to the backend
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-message`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            topic: topic.trim(),
-            mode: currentMode,
-          }),
-        });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Message sent successfully:', data);
-      } catch (error) {
-        console.error('Error sending message:', error);
-        // You might want to show an error message to the user here
-      }
-
-      // Continue with the original functionality
       onStart(topic.trim(), currentMode);
     }
   };
