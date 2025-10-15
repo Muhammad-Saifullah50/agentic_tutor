@@ -13,8 +13,8 @@ app.add_middleware(
     # Adjust the origins as needed for your frontend application
     allow_origins=["http://localhost:8080"], # add the vercel url
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get('/')
@@ -32,7 +32,7 @@ async def send_message(request: Request):
 
     enable_verbose_stdout_logging()
     set_tracing_disabled(True) 
-    result =  Runner.run_sync(
+    result = await Runner.run(
             triage_agent,
             input=topic,
         )

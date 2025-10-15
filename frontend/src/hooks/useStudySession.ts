@@ -17,10 +17,10 @@ export function useStudySession() {
     },
   });
 
-  const startSession = (topic: string, mode: StudyMode) => {
-    const explanation = generateMockExplanation(topic, mode);
-    const questions = generateMockQuestions(topic, mode);
-    const flashcards = generateMockFlashcards(topic, mode);
+  const startSession = async (topic: string, mode: StudyMode) => {
+    const explanation = await generateMockExplanation(topic, mode);
+    const questions = await  generateMockQuestions(topic, mode);
+    const flashcards = await generateMockFlashcards(topic, mode);
 
     setSession({
       topic,
