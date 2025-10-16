@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "./../components/ui/button";
 import { ArrowRight, BookOpen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 

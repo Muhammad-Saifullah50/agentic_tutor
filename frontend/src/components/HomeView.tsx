@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "./../components/ui/button";
+import { Input } from "./../components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "./../components/ui/select";
 import { Brain, Sparkles, ArrowRight } from "lucide-react";
-import { StudyMode } from "@/types";
+import { StudyMode } from "./../types";
 
 interface HomeViewProps {
   onStart: (topic: string, mode: StudyMode) => void;

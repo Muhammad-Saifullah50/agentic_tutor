@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "./../components/ui/button";
+import { Card } from "./../components/ui/card";
+import { Progress } from "./../components/ui/progress";
 import { ArrowRight, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
-import { Question } from "@/types";
+import { Question } from "./../types";
 
 interface QuizViewProps {
   questions: Question[];

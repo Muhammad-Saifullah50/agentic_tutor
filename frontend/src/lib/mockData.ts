@@ -1,4 +1,4 @@
-import { StudyMode, Question, Flashcard } from "@/types";
+import { StudyMode, Question, Flashcard } from "./../types";
 
 export async function generateMockExplanation(topic: string, mode: StudyMode): Promise<string> {
   // Send the topic and mode to the backend

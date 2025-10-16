@@ -1,11 +1,12 @@
+'use client'
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Navbar } from "@/components/Navbar";
-import { HomeView } from "@/components/HomeView";
-import { ExplainView } from "@/components/ExplainView";
-import { QuizView } from "@/components/QuizView";
-import { ReviewView } from "@/components/ReviewView";
-import { useStudySession } from "@/hooks/useStudySession";
+import { Navbar } from "./../components/Navbar";
+import { HomeView } from "./../components/HomeView";
+import { ExplainView } from "./../components/ExplainView";
+import { QuizView } from "./../components/QuizView";
+import { ReviewView } from "./../components/ReviewView";
+import { useStudySession } from "./../hooks/useStudySession";
 
 const Index = () => {
   const {

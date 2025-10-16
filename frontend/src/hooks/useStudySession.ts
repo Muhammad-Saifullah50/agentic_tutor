@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { StudyMode, FlowStage, Question, Flashcard, StudySession } from "@/types";
-import { generateMockExplanation, generateMockQuestions, generateMockFlashcards } from "@/lib/mockData";
+import { StudyMode, FlowStage, Question, Flashcard, StudySession } from "./../types";
+import { generateMockExplanation, generateMockQuestions, generateMockFlashcards } from "./../lib/mockData";
 
 export function useStudySession() {
   const [session, setSession] = useState<StudySession>({

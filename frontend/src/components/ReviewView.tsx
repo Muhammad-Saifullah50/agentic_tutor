@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "./../components/ui/button";
+import { Card } from "./../components/ui/card";
+import { Progress } from "./../components/ui/progress";
 import { RotateCcw, Check, X, Trophy } from "lucide-react";
-import { Flashcard } from "@/types";
+import { Flashcard } from "./../types";
 import confetti from "canvas-confetti";
 
 interface ReviewViewProps {
