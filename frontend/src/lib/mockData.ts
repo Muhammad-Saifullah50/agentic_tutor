@@ -9,8 +9,9 @@ export async function generateMockExplanation(topic: string, mode: StudyMode): P
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        topic: topic.trim(),
         mode: mode,
+        stage: 'explain',
+        prompt: 'Explain this topic: ' + topic 
       }),
     });
 
@@ -19,7 +20,7 @@ export async function generateMockExplanation(topic: string, mode: StudyMode): P
     }
 
     const data = await response.json();
-    console.log(data, 'data')
+
     return data.explanation
 
     
@@ -39,18 +40,19 @@ try {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        topic: topic.trim(),
         mode: mode,
+        stage: 'quiz',
+        prompt: ` Generate 3 questions related to this topic: ${topic}` 
       }),
     });
-
+console.log(response, 'response')
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
     console.log(data, 'data')
-    return data
+    return data.questions
 // have to send data corrxcclkty from here 
     
   } catch (error) {
@@ -78,6 +80,7 @@ export async function generateMockFlashcards(topic: string, mode: StudyMode) {
       body: JSON.stringify({
         topic: topic.trim(),
         mode: mode,
+        stage: 'review'
       }),
     });
 

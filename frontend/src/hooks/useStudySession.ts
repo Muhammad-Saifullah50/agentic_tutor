@@ -19,16 +19,14 @@ export function useStudySession() {
 
   const startSession = async (topic: string, mode: StudyMode) => {
     const explanation = await generateMockExplanation(topic, mode);
-    const questions = await  generateMockQuestions(topic, mode);
-    const flashcards = await generateMockFlashcards(topic, mode);
 
     setSession({
       topic,
       mode,
       stage: "explain",
       explanation,
-      questions,
-      flashcards,
+      questions: [],
+      flashcards: [],
       progress: {
         questionsAnswered: 0,
         questionsCorrect: 0,
@@ -38,17 +36,20 @@ export function useStudySession() {
     });
   };
 
-  const moveToQuiz = () => {
-    setSession((prev) => ({ ...prev, stage: "quiz" }));
+  const moveToQuiz = async (topic: string, mode: StudyMode) => {
+    const questions = await generateMockQuestions( topic, mode);
+    setSession((prev) => ({ ...prev, stage: "quiz", questions: questions }));
   };
 
-  const moveToReview = () => {
-    setSession((prev) => ({ ...prev, stage: "review" }));
+  const moveToReview = async (mode: string, topic: StudyMode)  => {
+    const flashcards = await generateMockFlashcards(mode, topic);
+
+    setSession((prev) => ({ ...prev, stage: "review", flashcards: flashcards}));
   };
 
   const answerQuestion = (questionId: string, answerIndex: number) => {
     const question = session.questions.find((q) => q.id === questionId);
-    const isCorrect = question?.correctAnswer === answerIndex;
+    const isCorrect = Number(question?.correct_answer) === answerIndex;
 
     setSession((prev) => ({
       ...prev,

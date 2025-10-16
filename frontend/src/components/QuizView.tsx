@@ -13,6 +13,7 @@ interface QuizViewProps {
 }
 
 export function QuizView({ questions, onComplete, onAnswerQuestion }: QuizViewProps) {
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -82,7 +83,7 @@ export function QuizView({ questions, onComplete, onAnswerQuestion }: QuizViewPr
             <div className="space-y-3">
               {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswer === index;
-                const isCorrectAnswer = currentQuestion.correctAnswer === index;
+                const isCorrectAnswer = currentQuestion.correct_answer === index;
                 const showCorrect = isAnswered && isCorrectAnswer;
                 const showIncorrect = isAnswered && isSelected && !isCorrect;
 

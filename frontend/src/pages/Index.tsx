@@ -18,6 +18,8 @@ const Index = () => {
     resetSession,
   } = useStudySession();
 
+  console.log(session, 'session')
+
   const [currentMode, setCurrentMode] = useState<typeof session.mode>("beginner");
 
   const handleModeChange = (mode: typeof session.mode) => {
@@ -53,7 +55,7 @@ const Index = () => {
               key="explain"
               topic={session.topic}
               explanation={session.explanation}
-              onNext={moveToQuiz}
+              onNext={() => moveToQuiz(session.topic, session.mode)}
             />
           )}
 
@@ -61,7 +63,7 @@ const Index = () => {
             <QuizView
               key="quiz"
               questions={session.questions}
-              onComplete={moveToReview}
+              onComplete={() => moveToReview(session.topic, session.mode)}
               onAnswerQuestion={answerQuestion}
             />
           )}

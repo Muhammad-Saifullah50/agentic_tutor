@@ -24,17 +24,17 @@ def root():
 @app.post('/send-message')
 async def send_message(request: Request):
     body = await request.json()
-    topic = body.get("topic")
     mode = body.get('mode')
-    step = body.get('step')
-
-    # todo: send the mode
+    stage = body.get('stage')
+    prompt = body.get('prompt')
 
     enable_verbose_stdout_logging()
     set_tracing_disabled(True) 
     result = await Runner.run(
             triage_agent,
-            input=topic,
+            # dynamic prompt coming from the api request such as to explain, to generate questions or flashcards
+            input=prompt,
+            context=f'The user is on "{mode} mode and the learning stage is "{stage}".'
         )
     
     return result.final_output

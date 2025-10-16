@@ -6,7 +6,7 @@ export interface Question {
   id: string;
   question: string;
   options: string[];
-  correctAnswer: number;
+  correct_answer: number;
   explanation: string;
 }
 
