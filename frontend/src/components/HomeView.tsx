@@ -58,7 +58,7 @@ export function HomeView({ onStart, currentMode, onModeChange }: HomeViewProps) 
             transition={{ delay: 0.3 }}
             className="text-5xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent"
           >
-            Study Mode
+            Your AI Study Partner
           </motion.h1>
 
           <motion.p
@@ -95,7 +95,7 @@ export function HomeView({ onStart, currentMode, onModeChange }: HomeViewProps) 
                   className="text-lg h-14 border-2 focus:border-primary"
                   autoFocus
                 />
-                
+
                 <div className="mt-4">
                   <label className="block text-sm font-medium mb-2">
                     Study Mode

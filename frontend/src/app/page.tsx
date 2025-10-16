@@ -19,8 +19,6 @@ const Index = () => {
     resetSession,
   } = useStudySession();
 
-  console.log(session, 'session')
-
   const [currentMode, setCurrentMode] = useState<typeof session.mode>("beginner");
 
   const handleModeChange = (mode: typeof session.mode) => {

@@ -1,12 +1,5 @@
-import { Brain, Moon, Sun, Monitor } from "lucide-react";
-import { Button } from "./../components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./../components/ui/dropdown-menu";
-import { useState, useEffect } from "react";
+import { Brain } from "lucide-react";
+
 import { ThemeToggle } from "./ThemeToggle";
 
 interface NavbarProps {
@@ -34,7 +27,7 @@ export function Navbar({
               <Brain className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Study Mode</h1>
+              <h1 className="text-xl font-bold">AgentiLearn</h1>
               <p className="text-xs text-muted-foreground">AI-Powered Learning</p>
             </div>
           </div>
