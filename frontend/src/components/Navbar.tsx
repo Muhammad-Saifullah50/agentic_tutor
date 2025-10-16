@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "./../components/ui/dropdown-menu";
 import { useState, useEffect } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavbarProps {
   questionsCorrect?: number;
@@ -21,27 +22,7 @@ export function Navbar({
   flashcardsRemembered = 0,
   flashcardsTotal = 0,
 }: NavbarProps) {
-  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
-
-  useEffect(() => {
-    const applyTheme = (currentTheme: typeof theme) => {
-      if (currentTheme === "system") {
-        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        document.documentElement.classList.toggle("dark", systemPrefersDark);
-      } else {
-        document.documentElement.classList.toggle("dark", currentTheme === "dark");
-      }
-    };
-
-    applyTheme(theme);
-
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const handler = () => applyTheme("system");
-      mediaQuery.addEventListener("change", handler);
-      return () => mediaQuery.removeEventListener("change", handler);
-    }
-  }, [theme]);
+  
 
   return (
     <nav className="border-b bg-card shadow-card">
@@ -80,33 +61,7 @@ export function Navbar({
 
           {/* Right Side - Theme Toggle */}
           <div className="flex items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="transition-transform hover:scale-110"
-                >
-                  {theme === "light" && <Sun className="h-5 w-5" />}
-                  {theme === "dark" && <Moon className="h-5 w-5" />}
-                  {theme === "system" && <Monitor className="h-5 w-5" />}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  <Sun className="h-4 w-4 mr-2" />
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  <Moon className="h-4 w-4 mr-2" />
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                  <Monitor className="h-4 w-4 mr-2" />
-                  System
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ThemeToggle/>
           </div>
         </div>
 

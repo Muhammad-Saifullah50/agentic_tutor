@@ -12,7 +12,7 @@ RUN npm install
 COPY . .
 
 # Expose port
-EXPOSE 8080
+EXPOSE 3000
 
 # Start in dev mode (for docker-compose local dev)
 CMD ["npm", "run", "dev"]

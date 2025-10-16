@@ -5,7 +5,6 @@ import { Card } from "./../components/ui/card";
 import { Progress } from "./../components/ui/progress";
 import { RotateCcw, Check, X, Trophy } from "lucide-react";
 import { Flashcard } from "./../types";
-import confetti from "canvas-confetti";
 
 interface ReviewViewProps {
   flashcards: Flashcard[];
@@ -34,11 +33,11 @@ export function ReviewView({
     if (currentIndex >= flashcards.length && !isComplete) {
       setIsComplete(true);
       // Trigger confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
+      // confetti({
+      //   particleCount: 100,
+      //   spread: 70,
+      //   origin: { y: 0.6 },
+      // });
     }
   }, [currentIndex, flashcards.length, isComplete]);
 

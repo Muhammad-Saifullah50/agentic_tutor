@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: tutor-app-frontend
     ports:
-      - "8080:8080"   # Localhost:8080 -> Vite
+      - "3000:3000"   # Localhost:8080 -> Vite
     environment:
       NEXT_PUBLIC_API_URL: "http://localhost:8000"
     command: npm run dev
