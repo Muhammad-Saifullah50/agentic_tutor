@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String
+  clerkId      String
   username     String
   imageUrl     String?
   emailaddress String   @unique
@@ -44,9 +44,12 @@ model FlashCard {
 }
 
 model Lesson {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  questions  Question[]
-  flashcards FlashCard[]
-  userId     String      @db.ObjectId
-  User       User        @relation(fields: [userId], references: [id])
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  topic       String
+  mode        String
+  explanation String?
+  questions   Question[]
+  flashcards  FlashCard[]
+  userId      String      @db.ObjectId
+  User        User        @relation(fields: [userId], references: [id])
 }

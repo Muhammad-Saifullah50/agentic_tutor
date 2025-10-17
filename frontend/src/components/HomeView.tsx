@@ -13,6 +13,8 @@ import {
 import { Brain, Sparkles, ArrowRight } from "lucide-react";
 import { StudyMode } from "./../types"
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { createLesson } from "../actions/lesson.actions";
 
 interface HomeViewProps {
   initialMode?: StudyMode;
@@ -22,10 +24,16 @@ export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
   const [topic, setTopic] = useState("");
   const [selectedMode, setSelectedMode] = useState<StudyMode>(initialMode);
   const router = useRouter();
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (topic.trim()) {
+      const { isSignedIn , userId} = useAuth()
+
+      if (isSignedIn) {
+        await createLesson(topic.trim(), userId!, selectedMode)
+
+      }
       // Redirect to the explain stage with topic and mode
       router.push(`/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain`);
     }

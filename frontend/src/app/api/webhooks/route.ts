@@ -66,7 +66,7 @@ export async function POST(req: Request) {
 
     if (eventType === 'user.updated') {
         const data = {
-            userId: evt.data.id,
+            clerkId: evt.data.id,
             username: evt.data.username,
             imageUrl: evt.data.image_url,
             emailaddress: evt.data.email_addresses[0]?.email_address
