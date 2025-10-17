@@ -1,47 +1,67 @@
-import { getStudySessionData } from "../../../actions/data.actions"
+import { generateExplanation, generateFlashcards, generateQuestions, getStudySessionData } from "../../../actions/data.actions"
 import { FlowStage, StudyMode } from "../../../types"
 import { ExplainView } from "../../../components/ExplainView"
 import { QuizView } from "../../../components/QuizView"
 import { ReviewView } from "../../../components/ReviewView"
+import { getLesson } from "../../../actions/lesson.actions"
 
 type LessonPageParams = {
     topic: string
     mode: StudyMode
     stage: FlowStage
+    lesson_id: string
 }
 const LessonPage = async ({ searchParams }: { searchParams: Promise<LessonPageParams> }) => {
 
     const usableParams: LessonPageParams = await searchParams
 
+    const lesson = await getLesson(usableParams.lesson_id)
 
-    const studyData = await getStudySessionData(usableParams.topic, usableParams.mode, usableParams.stage)
+    let explanation;
+    let questions;
+    let flashcards;
 
-    if (studyData.stage === "explain" && studyData.explanation) {
+
+    switch (usableParams.stage) {
+        case "explain":
+            explanation = await generateExplanation(usableParams.topic, usableParams.mode)
+            break;
+        case "quiz":
+            questions = await generateQuestions(usableParams.topic, usableParams.mode)
+            break;
+        case "review":
+            flashcards = await generateFlashcards(usableParams.topic, usableParams.mode)
+            break;
+        default:
+            break;
+
+    }
+
+    if (usableParams.stage === "explain" && explanation) {
         return (
             <ExplainView
                 key="explain"
-                topic={studyData.topic}
-                explanation={studyData.explanation}
+                topic={usableParams.topic}
+                explanation={explanation}
             />
         )
     }
 
-    if (studyData.stage === "quiz") {
+    if (usableParams.stage === "quiz" && questions) {
         return (
             <QuizView
                 key="quiz"
-                questions={studyData.questions}
+                questions={questions}
             />
         )
     }
 
-    if (studyData.stage === "review") {
+    if (usableParams.stage === "review" && flashcards) {
         return (
             <ReviewView
                 key="review"
-                flashcards={studyData.flashcards}
-                cardsRemembered={studyData.progress.flashcardsRemembered}
-                cardsTotal={studyData.flashcards.length}
+                flashcards={flashcards}
+              
             />
         )
     }

@@ -24,18 +24,19 @@ export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
   const [topic, setTopic] = useState("");
   const [selectedMode, setSelectedMode] = useState<StudyMode>(initialMode);
   const router = useRouter();
+  const { isSignedIn , userId} = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (topic.trim()) {
-      const { isSignedIn , userId} = useAuth()
 
       if (isSignedIn) {
-        await createLesson(topic.trim(), userId!, selectedMode)
+       const lesson = await createLesson(topic.trim(), userId!, selectedMode)
 
+       // Redirect to the explain stage with topic and mode
+       router.push(`/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain&lesson_id=${lesson.id}`);
       }
-      // Redirect to the explain stage with topic and mode
-      router.push(`/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain`);
+     router.push(`/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain`); 
     }
   };
 

@@ -6,6 +6,9 @@ import { Card } from "./../components/ui/card";
 import { Progress } from "./../components/ui/progress";
 import { ArrowRight, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
 import { Question } from "./../types";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { updateLessonWithQuestions } from "../actions/lesson.actions";
 
 interface QuizViewProps {
   questions: Question[];
@@ -16,6 +19,9 @@ export function QuizView({ questions }: QuizViewProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { isSignedIn } = useAuth()
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
@@ -26,42 +32,35 @@ export function QuizView({ questions }: QuizViewProps) {
     }
   };
 
-  const handleCheckAnswer = async () => {
+  // ✅ Local check using correct_answer field
+  const handleCheckAnswer = () => {
     if (selectedAnswer === null) return;
 
-    // Send the answer to the server to track progress
-    try {
-      const response = await fetch('/api/answer-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          questionId: currentQuestion.id,
-          answerIndex: selectedAnswer,
-          topic: new URLSearchParams(window.location.search).get('topic'),
-          mode: new URLSearchParams(window.location.search).get('mode')
-        })
-      });
-      
-      const result = await response.json();
-      setIsCorrect(result.isCorrect);
-      setIsAnswered(true);
-    } catch (error) {
-      console.error('Error submitting answer:', error);
-    }
+    const correct = selectedAnswer === currentQuestion.correct_answer;
+    setIsCorrect(correct);
+    setIsAnswered(true);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
       setIsCorrect(false);
     } else {
-      // Redirect to the review stage
-      const urlParams = new URLSearchParams(window.location.search);
-      const topic = urlParams.get('topic');
-      const mode = urlParams.get('mode');
-      window.location.href = `/?topic=${encodeURIComponent(topic || '')}&mode=${mode}&stage=review`;
+      // Redirect to review stage
+      const topic = searchParams.get('topic');
+      const mode = searchParams.get('mode');
+
+      const lessonId = searchParams.get('lesson_id');
+
+      if (!lessonId) router.push('/');
+// have to fiogure opur what to do if search params not presenr in url in all views
+      if (isSignedIn && lessonId) {
+        await updateLessonWithQuestions(lessonId, questions);
+        router.push(`/lesson?topic=${encodeURIComponent(topic!)}&mode=${mode}&stage=quiz&lesson_id=${lessonId}`)
+      }
+      router.push(`/lesson?topic=${encodeURIComponent(topic!)}&mode=${mode}&stage=review`);
     }
   };
 

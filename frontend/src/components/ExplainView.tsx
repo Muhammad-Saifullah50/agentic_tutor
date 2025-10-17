@@ -3,18 +3,33 @@ import { motion } from "framer-motion";
 import { Button } from "./../components/ui/button";
 import { ArrowRight, BookOpen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { updateLessonWithExplanation } from "../actions/lesson.actions";
 
 interface ExplainViewProps {
   topic: string;
   explanation: string;
 }
 
-export function ExplainView({ topic, explanation }: ExplainViewProps) {
-  const handleNext = () => {
+export function ExplainView({ topic,explanation }: ExplainViewProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleNext = async () => {
     // Redirect to the quiz stage with the current topic and mode
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode') || 'beginner';
-    window.location.href = `/?topic=${encodeURIComponent(topic)}&mode=${mode}&stage=quiz`;
+
+    const { isSignedIn } = useAuth()
+
+    const mode = searchParams.get('mode') || 'beginner';
+    const lessonId = searchParams.get('lesson_id') || '';
+      if (!lessonId) router.push('/')
+
+    if (isSignedIn) {
+      await updateLessonWithExplanation(lessonId, explanation);
+      router.push(`/lesson?topic=${encodeURIComponent(topic)}&mode=${mode}&stage=quiz&lesson_id=${lessonId}`)
+    }
+    router.push(`/lesson?topic=${encodeURIComponent(topic)}&mode=${mode}&stage=quiz`);
   };
 
   return (

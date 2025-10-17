@@ -6,71 +6,76 @@ import { Card } from "./../components/ui/card";
 import { Progress } from "./../components/ui/progress";
 import { RotateCcw, Check, X, Trophy } from "lucide-react";
 import { Flashcard } from "./../types";
+import { updateLessonWithFlashcards } from "../actions/lesson.actions";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 interface ReviewViewProps {
   flashcards: Flashcard[];
-  cardsRemembered: number;
-  cardsTotal: number;
 }
 
 export function ReviewView({
-  flashcards,
-  cardsRemembered,
-  cardsTotal,
+  flashcards
 }: ReviewViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [updatedFlashcards, setUpdatedFlashcards] = useState<Flashcard[]>(
+    flashcards.map(f => ({ ...f, remembered: false }))
+  );
 
-  const currentCard = flashcards[currentIndex];
-  const progress = ((currentIndex + 1) / flashcards.length) * 100;
-  const remainingCards = flashcards.length - currentIndex - 1;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { isSignedIn } = useAuth()
+  
+  const currentCard = updatedFlashcards[currentIndex];
+  const progress = ((currentIndex + 1) / updatedFlashcards.length) * 100;
+  const remainingCards = updatedFlashcards.length - currentIndex - 1;
 
   useEffect(() => {
-    if (currentIndex >= flashcards.length && !isComplete) {
+    if (currentIndex >= updatedFlashcards.length && !isComplete) {
       setIsComplete(true);
-      // Trigger confetti
-      // confetti({
-      //   particleCount: 100,
-      //   spread: 70,
-      //   origin: { y: 0.6 },
-      // });
     }
-  }, [currentIndex, flashcards.length, isComplete]);
+  }, [currentIndex, updatedFlashcards.length, isComplete]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
 
-  const handleMark = async (remembered: boolean) => {
-    // Send the flashcard result to the server
-    try {
-      const response = await fetch('/api/mark-flashcard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          flashcardId: currentCard.id,
-          remembered: remembered,
-          topic: new URLSearchParams(window.location.search).get('topic'),
-          mode: new URLSearchParams(window.location.search).get('mode')
-        })
-      });
-      
-      await response.json();
-      setIsFlipped(false);
-      setCurrentIndex(currentIndex + 1);
-    } catch (error) {
-      console.error('Error marking flashcard:', error);
-    }
+  const handleMark = (remembered: boolean) => {
+    // Update remembered status in local state
+    const updated = updatedFlashcards.map((card, index) =>
+      index === currentIndex ? { ...card, remembered } : card
+    );
+    setUpdatedFlashcards(updated);
+
+    // Move to next card
+    setIsFlipped(false);
+    setCurrentIndex(currentIndex + 1);
   };
 
   const handleRestart = () => {
-    // Redirect to start a new topic
-    window.location.href = '/';
+    const topic = searchParams.get('topic');
+    router.push(`/lesson?mode=beginner&stage=explain&topic=${encodeURIComponent(topic!)}`);
   };
 
+  const handleStartNew = async () => {
+    router.push('/')
+  }
+  
+  const handleLessonUpdate = async () => {
+    const lessonId = searchParams.get('lesson_id');
+    if (!lessonId) router.push('/');
+    await updateLessonWithFlashcards(lessonId, updatedFlashcards)
+  }
+
+
   if (isComplete) {
-    const successRate = Math.round((cardsRemembered / cardsTotal) * 100);
+
+    if (isSignedIn) handleLessonUpdate()
+
+    const rememberedCount = updatedFlashcards.filter(c => c.remembered).length;
+    const successRate = Math.round((rememberedCount / updatedFlashcards.length) * 100);
 
     return (
       <motion.div
@@ -97,7 +102,7 @@ export function ReviewView({
 
           <div className="grid grid-cols-2 gap-6 mb-8">
             <div className="rounded-lg bg-secondary p-6">
-              <p className="text-3xl font-bold text-success">{cardsRemembered}</p>
+              <p className="text-3xl font-bold text-success">{rememberedCount}</p>
               <p className="text-sm text-muted-foreground mt-1">Remembered</p>
             </div>
             <div className="rounded-lg bg-secondary p-6">
@@ -111,7 +116,7 @@ export function ReviewView({
               <RotateCcw className="mr-2 h-5 w-5" />
               Review Again
             </Button>
-            <Button onClick={handleRestart} variant="outline" size="lg">
+            <Button onClick={handleStartNew} variant="outline" size="lg">
               Start New Topic
             </Button>
           </div>
@@ -206,12 +211,14 @@ export function ReviewView({
       {/* Stats */}
       <div className="mt-8 flex justify-center gap-6">
         <div className="text-center">
-          <p className="text-2xl font-bold text-success">{cardsRemembered}</p>
+          <p className="text-2xl font-bold text-success">
+            {updatedFlashcards.filter(c => c.remembered).length}
+          </p>
           <p className="text-sm text-muted-foreground">Remembered</p>
         </div>
         <div className="text-center">
           <p className="text-2xl font-bold text-destructive">
-            {currentIndex - cardsRemembered}
+            {currentIndex - updatedFlashcards.filter(c => c.remembered).length}
           </p>
           <p className="text-sm text-muted-foreground">Forgot</p>
         </div>

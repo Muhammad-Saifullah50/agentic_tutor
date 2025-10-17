@@ -23,32 +23,28 @@ model User {
   lessons      Lesson[]
 }
 
-model Question {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  question       String
-  options        String[]
-  correct_answer Int
-  explanation    String
-  lesson         Lesson?  @relation(fields: [lessonId], references: [id])
-  lessonId       String?  @db.ObjectId
-}
+// model Question {
+//   id             String   @id @default(auto()) @map("_id") @db.ObjectId
+//   question       String
+//   options        String[]
+//   correct_answer Int
+//   explanation    String
+// }
 
-model FlashCard {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  front      String
-  back       String
-  remembered Boolean
-  lesson     Lesson? @relation(fields: [lessonId], references: [id])
-  lessonId   String? @db.ObjectId
-}
+// model FlashCard {
+//   id         String  @id @default(auto()) @map("_id") @db.ObjectId
+//   front      String
+//   back       String
+//   remembered Boolean
+// }
 
 model Lesson {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
   topic       String
   mode        String
   explanation String?
-  questions   Question[]
-  flashcards  FlashCard[]
+  questions   Json
+  flashcards  Json
   userId      String      @db.ObjectId
   User        User        @relation(fields: [userId], references: [id])
 }
