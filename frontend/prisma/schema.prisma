@@ -15,12 +15,39 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   userId       String
   username     String
   imageUrl     String?
-  emailaddress String    @unique
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  // podcasts     Podcast[]
+  emailaddress String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lessons      Lesson[]
+}
+
+model Question {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  question       String
+  options        String[]
+  correct_answer Int
+  explanation    String
+  lesson         Lesson?  @relation(fields: [lessonId], references: [id])
+  lessonId       String?  @db.ObjectId
+}
+
+model FlashCard {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  front      String
+  back       String
+  remembered Boolean
+  lesson     Lesson? @relation(fields: [lessonId], references: [id])
+  lessonId   String? @db.ObjectId
+}
+
+model Lesson {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  questions  Question[]
+  flashcards FlashCard[]
+  userId     String      @db.ObjectId
+  User       User        @relation(fields: [userId], references: [id])
 }
