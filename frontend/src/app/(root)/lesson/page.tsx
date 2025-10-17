@@ -1,8 +1,8 @@
-import { getStudySessionData } from "../../actions/data.actions"
-import { FlowStage, StudyMode } from "../../types"
-import { ExplainView } from "../../components/ExplainView"
-import { QuizView } from "../../components/QuizView"
-import { ReviewView } from "../../components/ReviewView"
+import { getStudySessionData } from "../../../actions/data.actions"
+import { FlowStage, StudyMode } from "../../../types"
+import { ExplainView } from "../../../components/ExplainView"
+import { QuizView } from "../../../components/QuizView"
+import { ReviewView } from "../../../components/ReviewView"
 
 type LessonPageParams = {
     topic: string

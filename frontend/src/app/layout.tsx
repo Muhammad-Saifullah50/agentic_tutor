@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import './../index.css'
 import { Toaster } from '../components/ui/toaster'
 import { ClerkProvider } from '@clerk/nextjs'
-import { ThemeProvider } from "./../components/theme-provider"
-import { SidebarProvider, SidebarTrigger } from "./../components/ui/sidebar"
-import { AppSidebar } from "./../components/AppSidebar"
+import { ThemeProvider } from "../components/theme-provider"
+import { SidebarProvider } from "../components/ui/sidebar"
+import { AppSidebar } from "../components/AppSidebar"
+import { Navbar } from '../components/Navbar'
 
 
 export const metadata: Metadata = {
@@ -21,25 +22,9 @@ export default function RootLayout({
     <ClerkProvider>
 
       <html lang="en" suppressHydrationWarning>
-        <body>
+        <body className=''>
           <Toaster />
-          <SidebarProvider  defaultOpen>
-
-            <AppSidebar />
-
-            <div className='flex w-full items-center justify-center'>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <SidebarTrigger />
-
-                {children}
-              </ThemeProvider>
-            </div>
-          </SidebarProvider>
+          {children}
         </body>
       </html>
     </ClerkProvider >

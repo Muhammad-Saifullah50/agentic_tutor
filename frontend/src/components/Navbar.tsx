@@ -1,6 +1,8 @@
 import { Brain } from "lucide-react";
 
 import { ThemeToggle } from "./ThemeToggle";
+import { SidebarTrigger } from "./ui/sidebar";
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 
 interface NavbarProps {
   questionsCorrect?: number;
@@ -15,10 +17,11 @@ export function Navbar({
   flashcardsRemembered = 0,
   flashcardsTotal = 0,
 }: NavbarProps) {
-  
+
 
   return (
-    <nav className="border-b bg-card shadow-card">
+    <nav className="border-b bg-card shadow-card w-full">
+      <SidebarTrigger className="absolute top-20 "/>
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -54,7 +57,13 @@ export function Navbar({
 
           {/* Right Side - Theme Toggle */}
           <div className="flex items-center gap-3">
-            <ThemeToggle/>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <ThemeToggle />
           </div>
         </div>
 

@@ -5,6 +5,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install dependencies
+COPY prisma ./prisma           
 COPY package*.json ./
 RUN npm install
 
