@@ -27,7 +27,7 @@ export default function RootLayout({
 
             <AppSidebar />
 
-            <div>
+            <div className='flex w-full items-center justify-center'>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="system"
