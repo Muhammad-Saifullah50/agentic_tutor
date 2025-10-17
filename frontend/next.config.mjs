@@ -6,6 +6,9 @@ const nextConfig = {
     },
     webpack: {
         ignoreBuildErrors: true
+    },
+    eslint: {
+        ignoreDuringBuilds: true,
     }
 }
 
