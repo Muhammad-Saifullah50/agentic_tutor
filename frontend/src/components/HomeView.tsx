@@ -1,3 +1,4 @@
+'use client'
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "./../components/ui/button";
@@ -10,22 +11,23 @@ import {
   SelectValue,
 } from "./../components/ui/select";
 import { Brain, Sparkles, ArrowRight } from "lucide-react";
-import { StudyMode } from "./../types";
+import { StudyMode } from "./../types"
+import { useRouter } from "next/navigation";
 
 interface HomeViewProps {
-  onStart: (topic: string, mode: StudyMode) => void;
-  currentMode: StudyMode;
-  onModeChange: (mode: StudyMode) => void;
+  initialMode?: StudyMode;
 }
 
-export function HomeView({ onStart, currentMode, onModeChange }: HomeViewProps) {
+export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
   const [topic, setTopic] = useState("");
-
+  const [selectedMode, setSelectedMode] = useState<StudyMode>(initialMode);
+  const router = useRouter();
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (topic.trim()) {
-
-      onStart(topic.trim(), currentMode);
+      // Redirect to the explain stage with topic and mode
+      router.push(`/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain`);
     }
   };
 
@@ -100,7 +102,7 @@ export function HomeView({ onStart, currentMode, onModeChange }: HomeViewProps) 
                   <label className="block text-sm font-medium mb-2">
                     Study Mode
                   </label>
-                  <Select value={currentMode} onValueChange={(value) => onModeChange(value as StudyMode)}>
+                  <Select value={selectedMode} onValueChange={(value) => setSelectedMode(value as StudyMode)}>
                     <SelectTrigger className="w-full h-12 text-base">
                       <SelectValue />
                     </SelectTrigger>

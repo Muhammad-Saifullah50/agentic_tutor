@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./../components/ui/button";
@@ -8,16 +9,12 @@ import { Flashcard } from "./../types";
 
 interface ReviewViewProps {
   flashcards: Flashcard[];
-  onMarkCard: (flashcardId: string, remembered: boolean) => void;
-  onReset: () => void;
   cardsRemembered: number;
   cardsTotal: number;
 }
 
 export function ReviewView({
   flashcards,
-  onMarkCard,
-  onReset,
   cardsRemembered,
   cardsTotal,
 }: ReviewViewProps) {
@@ -45,17 +42,31 @@ export function ReviewView({
     setIsFlipped(!isFlipped);
   };
 
-  const handleMark = (remembered: boolean) => {
-    onMarkCard(currentCard.id, remembered);
-    setIsFlipped(false);
-    setCurrentIndex(currentIndex + 1);
+  const handleMark = async (remembered: boolean) => {
+    // Send the flashcard result to the server
+    try {
+      const response = await fetch('/api/mark-flashcard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          flashcardId: currentCard.id,
+          remembered: remembered,
+          topic: new URLSearchParams(window.location.search).get('topic'),
+          mode: new URLSearchParams(window.location.search).get('mode')
+        })
+      });
+      
+      await response.json();
+      setIsFlipped(false);
+      setCurrentIndex(currentIndex + 1);
+    } catch (error) {
+      console.error('Error marking flashcard:', error);
+    }
   };
 
   const handleRestart = () => {
-    setCurrentIndex(0);
-    setIsFlipped(false);
-    setIsComplete(false);
-    onReset();
+    // Redirect to start a new topic
+    window.location.href = '/';
   };
 
   if (isComplete) {
@@ -100,7 +111,7 @@ export function ReviewView({
               <RotateCcw className="mr-2 h-5 w-5" />
               Review Again
             </Button>
-            <Button onClick={onReset} variant="outline" size="lg">
+            <Button onClick={handleRestart} variant="outline" size="lg">
               Start New Topic
             </Button>
           </div>

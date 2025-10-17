@@ -1,33 +1,41 @@
-'use client'
-import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { StudyMode, FlowStage, StudySession } from "./../types";
 import { Navbar } from "./../components/Navbar";
 import { HomeView } from "./../components/HomeView";
-import { ExplainView } from "./../components/ExplainView";
-import { QuizView } from "./../components/QuizView";
-import { ReviewView } from "./../components/ReviewView";
-import { useStudySession } from "./../hooks/useStudySession";
 
-const Index = () => {
-  const {
-    session,
-    startSession,
-    moveToQuiz,
-    moveToReview,
-    answerQuestion,
-    markFlashcard,
-    resetSession,
-  } = useStudySession();
+import { AnimatePresence } from "framer-motion";
+import { getStudySessionData } from "../actions/data.actions";
 
-  const [currentMode, setCurrentMode] = useState<typeof session.mode>("beginner");
 
-  const handleModeChange = (mode: typeof session.mode) => {
-    setCurrentMode(mode);
-    // If user changes mode, reset the session
-    if (session.stage !== "home") {
-      resetSession();
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+
+  const usableParams = await searchParams 
+
+  const topic = usableParams?.topic as string || "";
+  const mode = usableParams?.mode as StudyMode || "beginner";
+  const stage = usableParams?.stage as FlowStage || "home";
+
+  let session: StudySession = {
+    topic: "",
+    mode: "beginner",
+    stage: "home",
+    explanation: undefined,
+    questions: [],
+    flashcards: [],
+    progress: {
+      questionsAnswered: 0,
+      questionsCorrect: 0,
+      flashcardsReviewed: 0,
+      flashcardsRemembered: 0,
     }
   };
+
+  if (topic && mode && stage && stage !== "home") {
+    session = await getStudySessionData(topic, mode, stage) as StudySession;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -43,44 +51,13 @@ const Index = () => {
           {session.stage === "home" && (
             <HomeView
               key="home"
-              onStart={startSession}
-              currentMode={currentMode}
-              onModeChange={handleModeChange}
-            />
-          )}
-
-          {session.stage === "explain" && session.explanation && (
-            <ExplainView
-              key="explain"
-              topic={session.topic}
-              explanation={session.explanation}
-              onNext={() => moveToQuiz(session.topic, session.mode)}
-            />
-          )}
-
-          {session.stage === "quiz" && (
-            <QuizView
-              key="quiz"
-              questions={session.questions}
-              onComplete={() => moveToReview(session.topic, session.mode)}
-              onAnswerQuestion={answerQuestion}
-            />
-          )}
-
-          {session.stage === "review" && (
-            <ReviewView
-              key="review"
-              flashcards={session.flashcards}
-              onMarkCard={markFlashcard}
-              onReset={resetSession}
-              cardsRemembered={session.progress.flashcardsRemembered}
-              cardsTotal={session.flashcards.length}
+              initialMode={session.mode}
             />
           )}
         </AnimatePresence>
       </main>
     </div>
   );
-};
+}
 
-export default Index;
+// have to add db syncing on every step

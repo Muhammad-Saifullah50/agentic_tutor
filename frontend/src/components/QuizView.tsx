@@ -1,3 +1,4 @@
+'use client'
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./../components/ui/button";
@@ -8,12 +9,9 @@ import { Question } from "./../types";
 
 interface QuizViewProps {
   questions: Question[];
-  onComplete: () => void;
-  onAnswerQuestion: (questionId: string, answerIndex: number) => boolean;
 }
 
-export function QuizView({ questions, onComplete, onAnswerQuestion }: QuizViewProps) {
-
+export function QuizView({ questions }: QuizViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -28,12 +26,28 @@ export function QuizView({ questions, onComplete, onAnswerQuestion }: QuizViewPr
     }
   };
 
-  const handleCheckAnswer = () => {
+  const handleCheckAnswer = async () => {
     if (selectedAnswer === null) return;
 
-    const correct = onAnswerQuestion(currentQuestion.id, selectedAnswer);
-    setIsCorrect(correct);
-    setIsAnswered(true);
+    // Send the answer to the server to track progress
+    try {
+      const response = await fetch('/api/answer-question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          answerIndex: selectedAnswer,
+          topic: new URLSearchParams(window.location.search).get('topic'),
+          mode: new URLSearchParams(window.location.search).get('mode')
+        })
+      });
+      
+      const result = await response.json();
+      setIsCorrect(result.isCorrect);
+      setIsAnswered(true);
+    } catch (error) {
+      console.error('Error submitting answer:', error);
+    }
   };
 
   const handleNext = () => {
@@ -43,7 +57,11 @@ export function QuizView({ questions, onComplete, onAnswerQuestion }: QuizViewPr
       setIsAnswered(false);
       setIsCorrect(false);
     } else {
-      onComplete();
+      // Redirect to the review stage
+      const urlParams = new URLSearchParams(window.location.search);
+      const topic = urlParams.get('topic');
+      const mode = urlParams.get('mode');
+      window.location.href = `/?topic=${encodeURIComponent(topic || '')}&mode=${mode}&stage=review`;
     }
   };
 

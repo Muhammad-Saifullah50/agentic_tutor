@@ -1,3 +1,4 @@
+'use client'
 import { motion } from "framer-motion";
 import { Button } from "./../components/ui/button";
 import { ArrowRight, BookOpen } from "lucide-react";
@@ -6,10 +7,16 @@ import ReactMarkdown from "react-markdown";
 interface ExplainViewProps {
   topic: string;
   explanation: string;
-  onNext: () => void;
 }
 
-export function ExplainView({ topic, explanation, onNext }: ExplainViewProps) {
+export function ExplainView({ topic, explanation }: ExplainViewProps) {
+  const handleNext = () => {
+    // Redirect to the quiz stage with the current topic and mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode') || 'beginner';
+    window.location.href = `/?topic=${encodeURIComponent(topic)}&mode=${mode}&stage=quiz`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -35,7 +42,7 @@ export function ExplainView({ topic, explanation, onNext }: ExplainViewProps) {
 
       <div className="mt-8 flex justify-end">
         <Button
-          onClick={onNext}
+          onClick={handleNext}
           size="lg"
           className="group bg-gradient-primary hover:opacity-90 transition-opacity"
         >
