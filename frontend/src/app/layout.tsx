@@ -23,7 +23,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body>
           <Toaster />
-          <SidebarProvider>
+          <SidebarProvider  defaultOpen>
 
             <AppSidebar />
 
