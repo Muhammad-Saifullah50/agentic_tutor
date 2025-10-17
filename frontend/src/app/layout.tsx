@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
-import './../globals.css'
+import './../index.css'
 import { Toaster } from '../components/ui/toaster'
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "./../components/theme-provider"
-
+import { SidebarProvider, SidebarTrigger } from "./../components/ui/sidebar"
+import { AppSidebar } from "./../components/AppSidebar"
 
 
 export const metadata: Metadata = {
@@ -22,21 +23,27 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body>
           <Toaster />
+          <SidebarProvider>
 
-          <div>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
+            <AppSidebar />
 
-              {children}
-            </ThemeProvider>
-          </div>
+            <div>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <SidebarTrigger />
+
+                {children}
+              </ThemeProvider>
+            </div>
+          </SidebarProvider>
         </body>
       </html>
     </ClerkProvider >
 
   )
 }
+
