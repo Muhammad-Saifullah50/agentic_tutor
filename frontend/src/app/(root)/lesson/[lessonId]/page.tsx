@@ -4,7 +4,7 @@ import { ExplainView } from "../../../../components/ExplainView"
 import { QuizView } from "../../../../components/QuizView"
 import { ReviewView } from "../../../../components/ReviewView"
 
-type LessonPageParams = Promise<{ lessonId: string }>
+type LessonPageParams = Promise<{ lessonId?: string }>
 type LessonPageSearchParams = Promise<{ stage?: "review" | "quiz" | "explain" }>
 
 const LessonPage = async ({
@@ -14,16 +14,49 @@ const LessonPage = async ({
   params: LessonPageParams
   searchParams: LessonPageSearchParams
 }) => {
-
   const { lessonId } = await params
   const { stage } = await searchParams
 
-  const { userId } = await auth()
+  const { userId, redirectToSignIn } = await auth()
 
-  if (!userId) return null
+  // 🔒 Handle unauthenticated users
+  if (!userId) {
+    return redirectToSignIn()
+  }
+
+  // ⚠️ Handle missing or invalid lessonId
+  if (!lessonId || typeof lessonId !== "string") {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground text-center">
+          Invalid or missing lesson ID.
+        </p>
+      </div>
+    )
+  }
 
   const lesson = await getLessonById(lessonId)
-  if (!lesson) return null
+
+  if (!lesson) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground text-center">
+          Lesson not found.
+        </p>
+      </div>
+    )
+  }
+
+  const validStages = ["explain", "quiz", "review"] as const
+  if (!stage || !validStages.includes(stage)) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground text-center">
+          Invalid or missing stage. Please select a valid stage.
+        </p>
+      </div>
+    )
+  }
 
   switch (stage) {
     case "explain":
@@ -35,6 +68,7 @@ const LessonPage = async ({
           isPrevLesson
         />
       )
+
     case "quiz":
       return (
         <QuizView
@@ -43,6 +77,7 @@ const LessonPage = async ({
           isPrevLesson
         />
       )
+
     case "review":
       return (
         <ReviewView
@@ -51,6 +86,7 @@ const LessonPage = async ({
           isPrevLesson
         />
       )
+
     default:
       return null
   }
