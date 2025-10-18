@@ -5,6 +5,14 @@ from agents import enable_verbose_stdout_logging,set_tracing_disabled
 
 from agents import Runner
 from ai_agents.triage_agent import triage_agent
+import agentops
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+
+
+agentops_api_key = os.getenv('AGENTOPS_API_KEY')
 
 app = FastAPI()
 
@@ -30,6 +38,9 @@ async def send_message(request: Request):
 
     enable_verbose_stdout_logging()
     set_tracing_disabled(True) 
+
+    agentops.init(agentops_api_key)
+
     result = await Runner.run(
             triage_agent,
             # dynamic prompt coming from the api request such as to explain, to generate questions or flashcards

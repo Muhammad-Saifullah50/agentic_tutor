@@ -14,7 +14,6 @@ export const createLesson = async (topic: string, clerkId: string, mode: StudyMo
             data: {
                 topic,
                 mode,
-                clerkId: clerkId,
                 flashcards: [],
                 questions: [],
                 userId: user.id
@@ -23,7 +22,7 @@ export const createLesson = async (topic: string, clerkId: string, mode: StudyMo
 
         return lesson
     } catch (error) {
-
+        console.error('error creating leson', error)
     }
 }
 
@@ -85,5 +84,44 @@ export const updateLessonWithFlashcards = async (lessonId: string, flashcards: F
         })
     } catch (error) {
         console.error('Error updating lesson:', error)
+    }
+}
+
+export const getUserLessons = async () => {
+    try {
+        const user = await getCurrentUserfromDb();
+
+        if (!user) {
+            throw new Error('User not authenticated');
+        }
+
+        const lessons = await db.lesson.findMany({
+            where: {
+                userId: user.id
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return lessons;
+    } catch (error) {
+        console.error('Error fetching user lessons:', error);
+        return []
+    }
+}
+
+export const getLessonById = async (lessonId: string) => {
+    try {
+        const lesson = await db.lesson.findUnique({
+            where: {
+                id: lessonId
+            },
+        })
+
+        return lesson
+    } catch (error) {
+        console.error('Error fetching lesson:', error)
+        return null
     }
 }

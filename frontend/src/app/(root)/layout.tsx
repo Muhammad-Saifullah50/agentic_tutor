@@ -1,29 +1,31 @@
-import { AppSidebar } from "../../components/AppSidebar"
-import { Navbar } from "../../components/Navbar"
-import { ThemeProvider } from "../../components/theme-provider"
-import { SidebarProvider } from "../../components/ui/sidebar"
+import { AppSidebar } from "../../components/AppSidebar";
+import { Navbar } from "../../components/Navbar";
+import { ThemeProvider } from "../../components/theme-provider";
+import { SidebarProvider } from "../../components/ui/sidebar";
 
-const layout = ({children} : {children: React.ReactNode}) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-   <SidebarProvider defaultOpen>
+    <SidebarProvider defaultOpen>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
 
-            <AppSidebar />
+        <div className="flex flex-col flex-1">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navbar />
 
-            <div className='flex w-full items-center justify-center flex-col min-h-screen'>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <Navbar />
-                <main>
-                  {children}
-                </main>
-              </ThemeProvider>
-            </div>
-          </SidebarProvider>
-  )
-}
+            <main className="flex flex-1 items-center justify-center p-6">
+              {children}
+            </main>
+          </ThemeProvider>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+};
 
-export default layout
+export default Layout;

@@ -12,11 +12,10 @@ import { useAuth } from "@clerk/nextjs";
 
 interface ReviewViewProps {
   flashcards: Flashcard[];
+  isPrevLesson?: boolean;
 }
 
-export function ReviewView({
-  flashcards
-}: ReviewViewProps) {
+export function ReviewView({ flashcards,isPrevLesson }: ReviewViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -26,11 +25,12 @@ export function ReviewView({
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isSignedIn } = useAuth()
-  
+  const { isSignedIn } = useAuth();
+
+  // ✅ Safe access: prevent crash when index exceeds array length
   const currentCard = updatedFlashcards[currentIndex];
   const progress = ((currentIndex + 1) / updatedFlashcards.length) * 100;
-  const remainingCards = updatedFlashcards.length - currentIndex - 1;
+  const remainingCards = Math.max(updatedFlashcards.length - currentIndex - 1, 0);
 
   useEffect(() => {
     if (currentIndex >= updatedFlashcards.length && !isComplete) {
@@ -38,20 +38,21 @@ export function ReviewView({
     }
   }, [currentIndex, updatedFlashcards.length, isComplete]);
 
-  const handleFlip = () => {
-    setIsFlipped(!isFlipped);
-  };
+  const handleFlip = () => setIsFlipped(!isFlipped);
 
   const handleMark = (remembered: boolean) => {
-    // Update remembered status in local state
     const updated = updatedFlashcards.map((card, index) =>
       index === currentIndex ? { ...card, remembered } : card
     );
     setUpdatedFlashcards(updated);
-
-    // Move to next card
     setIsFlipped(false);
-    setCurrentIndex(currentIndex + 1);
+
+    // ✅ Prevent out-of-bounds access
+    if (currentIndex + 1 >= updatedFlashcards.length) {
+      setIsComplete(true);
+    } else {
+      setCurrentIndex(currentIndex + 1);
+    }
   };
 
   const handleRestart = () => {
@@ -59,21 +60,29 @@ export function ReviewView({
     router.push(`/lesson?mode=beginner&stage=explain&topic=${encodeURIComponent(topic!)}`);
   };
 
-  const handleStartNew = async () => {
-    router.push('/')
-  }
-  
+  const handleStartNew = () => router.push('/');
+
   const handleLessonUpdate = async () => {
     const lessonId = searchParams.get('lesson_id');
-    if (!lessonId) router.push('/');
-    await updateLessonWithFlashcards(lessonId, updatedFlashcards)
-  }
+    if (!lessonId) {
+      router.push('/');
+      return;
+    }
+    try {
+      await updateLessonWithFlashcards(lessonId, updatedFlashcards);
+    } catch (error) {
+      console.error("Error updating lesson:", error);
+    }
+  };
 
+  useEffect(() => {
+    if (isComplete && isSignedIn) {
+      handleLessonUpdate();
+    }
+  }, [isComplete, isSignedIn]);
 
+  // ✅ Show results screen after completion
   if (isComplete) {
-
-    if (isSignedIn) handleLessonUpdate()
-
     const rememberedCount = updatedFlashcards.filter(c => c.remembered).length;
     const successRate = Math.round((rememberedCount / updatedFlashcards.length) * 100);
 
@@ -112,12 +121,12 @@ export function ReviewView({
           </div>
 
           <div className="flex gap-3 justify-center">
-            <Button onClick={handleRestart} size="lg" className="bg-gradient-primary hover:opacity-90">
+           {!isPrevLesson && <Button onClick={handleRestart} size="lg" className="bg-gradient-primary hover:opacity-90">
               <RotateCcw className="mr-2 h-5 w-5" />
               Review Again
-            </Button>
+            </Button>}
             <Button onClick={handleStartNew} variant="outline" size="lg">
-              Start New Topic
+              Start New Lesson
             </Button>
           </div>
         </Card>
@@ -125,6 +134,7 @@ export function ReviewView({
     );
   }
 
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -132,7 +142,6 @@ export function ReviewView({
       exit={{ opacity: 0, y: -20 }}
       className="w-full max-w-2xl mx-auto"
     >
-      {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-2xl font-bold">Spaced Repetition</h2>
@@ -143,7 +152,6 @@ export function ReviewView({
         <Progress value={progress} className="h-2" />
       </div>
 
-      {/* Flashcard */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -158,28 +166,31 @@ export function ReviewView({
             style={{ perspective: "1000px" }}
           >
             <AnimatePresence mode="wait">
-              <motion.div
-                key={isFlipped ? "back" : "front"}
-                initial={{ rotateY: 90 }}
-                animate={{ rotateY: 0 }}
-                exit={{ rotateY: -90 }}
-                transition={{ duration: 0.3 }}
-                className="h-full p-8 flex flex-col items-center justify-center"
-              >
-                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-4">
-                  {isFlipped ? "Answer" : "Question"}
-                </p>
-                <p className="text-2xl font-semibold text-center">
-                  {isFlipped ? currentCard.back : currentCard.front}
-                </p>
-                {!isFlipped && (
-                  <p className="text-sm text-muted-foreground mt-6">Click to reveal answer</p>
-                )}
-              </motion.div>
+              {currentCard && (
+                <motion.div
+                  key={isFlipped ? "back" : "front"}
+                  initial={{ rotateY: 90 }}
+                  animate={{ rotateY: 0 }}
+                  exit={{ rotateY: -90 }}
+                  transition={{ duration: 0.3 }}
+                  className="h-full p-8 flex flex-col items-center justify-center"
+                >
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground mb-4">
+                    {isFlipped ? "Answer" : "Question"}
+                  </p>
+                  <p className="text-2xl font-semibold text-center">
+                    {isFlipped ? currentCard.back : currentCard.front}
+                  </p>
+                  {!isFlipped && (
+                    <p className="text-sm text-muted-foreground mt-6">
+                      Click to reveal answer
+                    </p>
+                  )}
+                </motion.div>
+              )}
             </AnimatePresence>
           </Card>
 
-          {/* Action Buttons */}
           {isFlipped && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -208,7 +219,6 @@ export function ReviewView({
         </motion.div>
       </AnimatePresence>
 
-      {/* Stats */}
       <div className="mt-8 flex justify-center gap-6">
         <div className="text-center">
           <p className="text-2xl font-bold text-success">

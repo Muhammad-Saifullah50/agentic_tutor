@@ -4,24 +4,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./../components/ui/button";
 import { Card } from "./../components/ui/card";
 import { Progress } from "./../components/ui/progress";
-import { ArrowRight, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, XCircle, HelpCircle, Loader2 } from "lucide-react";
 import { Question } from "./../types";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { updateLessonWithQuestions } from "../actions/lesson.actions";
 
 interface QuizViewProps {
   questions: Question[];
+  isPrevLesson?: boolean;
 }
 
-export function QuizView({ questions }: QuizViewProps) {
+export function QuizView({ questions, isPrevLesson }: QuizViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isSignedIn } = useAuth()
+  const { isSignedIn } = useAuth();
+  const pathname = usePathname();
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
@@ -32,10 +35,8 @@ export function QuizView({ questions }: QuizViewProps) {
     }
   };
 
-  // ✅ Local check using correct_answer field
   const handleCheckAnswer = () => {
     if (selectedAnswer === null) return;
-
     const correct = selectedAnswer === currentQuestion.correct_answer;
     setIsCorrect(correct);
     setIsAnswered(true);
@@ -48,19 +49,36 @@ export function QuizView({ questions }: QuizViewProps) {
       setIsAnswered(false);
       setIsCorrect(false);
     } else {
-      // Redirect to review stage
-      const topic = searchParams.get('topic');
-      const mode = searchParams.get('mode');
+      // ✅ Start loading state
+      setIsLoading(true);
 
-      const lessonId = searchParams.get('lesson_id');
+      if (isPrevLesson) {
+        router.push(`${pathname}?stage=review`);
+        setIsLoading(false);
+      } else {
+        const topic = searchParams.get("topic");
+        const mode = searchParams.get("mode");
+        const lessonId = searchParams.get("lesson_id");
 
-      if (!lessonId) router.push('/');
-// have to fiogure opur what to do if search params not presenr in url in all views
-      if (isSignedIn && lessonId) {
-        await updateLessonWithQuestions(lessonId, questions);
-        router.push(`/lesson?topic=${encodeURIComponent(topic!)}&mode=${mode}&stage=quiz&lesson_id=${lessonId}`)
+        if (!lessonId) {
+          router.push("/");
+          setIsLoading(false);
+          return;
+        }
+
+        try {
+          if (isSignedIn && lessonId) {
+            await updateLessonWithQuestions(lessonId, questions);
+            router.push(
+              `/lesson?topic=${encodeURIComponent(topic!)}&mode=${mode}&stage=review&lesson_id=${lessonId}`
+            );
+          } else {
+            router.push(`/sign-in`);
+          }
+        } finally {
+          setIsLoading(false);
+        }
       }
-      router.push(`/lesson?topic=${encodeURIComponent(topic!)}&mode=${mode}&stage=review`);
     }
   };
 
@@ -140,7 +158,9 @@ export function QuizView({ questions }: QuizViewProps) {
                 <p className="text-sm font-medium mb-1">
                   {isCorrect ? "✓ Correct!" : "✗ Not quite"}
                 </p>
-                <p className="text-sm text-muted-foreground">{currentQuestion.explanation}</p>
+                <p className="text-sm text-muted-foreground">
+                  {currentQuestion.explanation}
+                </p>
               </motion.div>
             )}
           </Card>
@@ -150,20 +170,30 @@ export function QuizView({ questions }: QuizViewProps) {
             {!isAnswered ? (
               <Button
                 onClick={handleCheckAnswer}
-                disabled={selectedAnswer === null}
+                disabled={selectedAnswer === null || isLoading}
                 size="lg"
                 className="bg-gradient-primary hover:opacity-90"
               >
-                Check Answer
+                {isPrevLesson ? "Review" : "Check"} Answer
               </Button>
             ) : (
               <Button
                 onClick={handleNext}
                 size="lg"
-                className="group bg-gradient-primary hover:opacity-90"
+                disabled={isLoading}
+                className="group bg-gradient-primary hover:opacity-90 flex items-center"
               >
-                {currentIndex < questions.length - 1 ? "Next Question" : "Complete Quiz"}
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Generating Flashcards...
+                  </>
+                ) : (
+                  <>
+                    {currentIndex < questions.length - 1 ? "Next Question" : "Complete Quiz"}
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
               </Button>
             )}
           </div>

@@ -10,8 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./../components/ui/select";
-import { Brain, Sparkles, ArrowRight } from "lucide-react";
-import { StudyMode } from "./../types"
+import { Brain, Sparkles, ArrowRight, Loader2 } from "lucide-react"; // 👈 Added Loader2 icon
+import { StudyMode } from "./../types";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { createLesson } from "../actions/lesson.actions";
@@ -23,20 +23,31 @@ interface HomeViewProps {
 export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
   const [topic, setTopic] = useState("");
   const [selectedMode, setSelectedMode] = useState<StudyMode>(initialMode);
+  const [isLoading, setIsLoading] = useState(false); // 👈 new loading state
   const router = useRouter();
-  const { isSignedIn , userId} = useAuth()
+  const { isSignedIn, userId } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (topic.trim()) {
+    if (!topic.trim()) return;
 
-      if (isSignedIn) {
-       const lesson = await createLesson(topic.trim(), userId!, selectedMode)
+    if (!isSignedIn) {
+      router.push("/sign-in");
+      return;
+    }
 
-       // Redirect to the explain stage with topic and mode
-       router.push(`/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain&lesson_id=${lesson.id}`);
-      }
-     router.push(`/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain`); 
+    try {
+      setIsLoading(true); // 👈 start loading
+
+      const lesson = await createLesson(topic.trim(), userId!, selectedMode);
+
+      router.push(
+        `/lesson?topic=${encodeURIComponent(topic.trim())}&mode=${selectedMode}&stage=explain&lesson_id=${lesson.id}`
+      );
+    } catch (error) {
+      console.error("Error creating lesson:", error);
+    } finally {
+      setIsLoading(false); // 👈 stop loading
     }
   };
 
@@ -111,7 +122,12 @@ export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
                   <label className="block text-sm font-medium mb-2">
                     Study Mode
                   </label>
-                  <Select value={selectedMode} onValueChange={(value) => setSelectedMode(value as StudyMode)}>
+                  <Select
+                    value={selectedMode}
+                    onValueChange={(value) =>
+                      setSelectedMode(value as StudyMode)
+                    }
+                  >
                     <SelectTrigger className="w-full h-12 text-base">
                       <SelectValue />
                     </SelectTrigger>
@@ -125,14 +141,24 @@ export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
               </div>
             </div>
 
+            {/* Submit Button with Loader */}
             <Button
               type="submit"
-              disabled={!topic.trim()}
+              disabled={!topic.trim() || isLoading}
               size="lg"
-              className="w-full h-14 text-lg group bg-gradient-primary hover:opacity-90 transition-opacity"
+              className="w-full h-14 text-lg group bg-gradient-primary hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
             >
-              Start Learning
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>AI is generating explanation...</span>
+                </>
+              ) : (
+                <>
+                  Start Learning
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
             </Button>
           </form>
 
@@ -164,7 +190,9 @@ export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
               >
                 <div className="text-3xl mb-2">{feature.icon}</div>
                 <h3 className="font-semibold mb-1">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </div>

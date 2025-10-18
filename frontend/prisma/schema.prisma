@@ -15,29 +15,13 @@ datasource db {
 
 model User {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  clerkId      String
+  clerkId      String   @unique
   imageUrl     String?
   emailaddress String   @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   lessons      Lesson[]
 }
-
-// model Question {
-//   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-//   question       String
-//   options        String[]
-//   correct_answer Int
-//   explanation    String
-// }
-
-// model FlashCard {
-//   id         String  @id @default(auto()) @map("_id") @db.ObjectId
-//   front      String
-//   back       String
-//   remembered Boolean
-// }
-
 model Lesson {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
   topic       String
@@ -47,4 +31,7 @@ model Lesson {
   flashcards  Json
   userId      String      @db.ObjectId
   User        User        @relation(fields: [userId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
 }

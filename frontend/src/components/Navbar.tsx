@@ -20,7 +20,7 @@ export function Navbar({
 
 
   return (
-    <nav className="border-b bg-card shadow-card w-full">
+    <nav className="border-b bg-card shadow-card w-full sticky top-0 z-10 ">
       <SidebarTrigger className="absolute top-20 "/>
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">

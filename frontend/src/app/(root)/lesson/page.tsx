@@ -1,9 +1,9 @@
-import { generateExplanation, generateFlashcards, generateQuestions, getStudySessionData } from "../../../actions/data.actions"
+import { generateExplanation, generateFlashcards, generateQuestions } from "../../../actions/data.actions"
 import { FlowStage, StudyMode } from "../../../types"
 import { ExplainView } from "../../../components/ExplainView"
 import { QuizView } from "../../../components/QuizView"
 import { ReviewView } from "../../../components/ReviewView"
-import { getLesson } from "../../../actions/lesson.actions"
+import { auth } from "@clerk/nextjs/server"
 
 type LessonPageParams = {
     topic: string
@@ -14,8 +14,10 @@ type LessonPageParams = {
 const LessonPage = async ({ searchParams }: { searchParams: Promise<LessonPageParams> }) => {
 
     const usableParams: LessonPageParams = await searchParams
+    
+    const {isAuthenticated, redirectToSignIn} =await auth();
 
-    const lesson = await getLesson(usableParams.lesson_id)
+    if (!isAuthenticated) redirectToSignIn();
 
     let explanation;
     let questions;

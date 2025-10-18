@@ -8,7 +8,7 @@ services:
     ports:
       - "3000:3000"   # Localhost:8080 -> Vite
     environment:
-      NEXT_PUBLIC_API_URL: "http://localhost:8000"
+      NEXT_PUBLIC_API_URL: "http://backend:8000"
     command: npm run dev
     depends_on:
       - backend

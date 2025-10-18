@@ -1,12 +1,12 @@
 'use server'
-import { Flashcard, FlowStage, Question } from "../types";
+import { Flashcard, Question } from "../types";
 
 import { StudyMode } from "./../types";
 
 export async function generateExplanation(topic: string, mode: StudyMode): Promise<string | undefined> {
   // Send the topic and mode to the backend
   try {
-    const response = await fetch(`http://localhost:8000/send-message`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-message`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,6 +16,7 @@ export async function generateExplanation(topic: string, mode: StudyMode): Promi
         stage: 'explain',
         prompt: 'Explain this topic: ' + topic
       }),
+      cache: 'force-cache'
     });
 
     if (!response.ok) {
@@ -37,7 +38,7 @@ export async function generateExplanation(topic: string, mode: StudyMode): Promi
 export async function generateQuestions(topic: string, mode: StudyMode): Promise<Question[] | undefined> {
 
   try {
-    const response = await fetch(`http://localhost:8000/send-message`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-message`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,6 +49,8 @@ export async function generateQuestions(topic: string, mode: StudyMode): Promise
         stage: 'quiz',
         prompt: ` Generate 3 questions related to this topic: ${topic}`
       }),
+      cache: 'force-cache'
+
     });
 
     if (!response.ok) {
@@ -67,9 +70,9 @@ export async function generateQuestions(topic: string, mode: StudyMode): Promise
 
 
 
-export async function generateFlashcards(topic: string, mode: StudyMode):Promise<Flashcard[] | undefined> {
+export async function generateFlashcards(topic: string, mode: StudyMode): Promise<Flashcard[] | undefined> {
   try {
-    const response = await fetch(`http://localhost:8000/send-message`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-message`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -81,6 +84,8 @@ export async function generateFlashcards(topic: string, mode: StudyMode):Promise
         prompt: ` Generate 4 flashcards related to this topic: ${topic}`
 
       }),
+      cache: 'force-cache'
+
     });
 
     if (!response.ok) {
@@ -97,43 +102,4 @@ export async function generateFlashcards(topic: string, mode: StudyMode):Promise
     // You might want to show an error message to the user here
 
   }
-}
-
-// Server component - fetch initial data
-export const getStudySessionData = async (topic: string, mode: StudyMode, stage: FlowStage) => {
-  let explanation = null;
-  let questions: Question[] | undefined = [];
-  let flashcards: Flashcard[ ] | undefined = [];
-
-  switch (stage) {
-    case "explain":
-      explanation = await generateExplanation(topic, mode);
-      break;
-    case "quiz":
-    //   explanation = await generateMockExplanation(topic, mode);
-      questions = await generateQuestions(topic, mode);
-      break;
-    case "review":
-      // explanation = await generateMockExplanation(topic, mode);
-      // questions = await generateMockQuestions(topic, mode);
-      flashcards = await generateFlashcards(topic, mode);
-      break;
-    default:
-      break;
-  }
-
-  return {
-    topic,
-    mode,
-    stage,
-    explanation,
-    questions,
-    flashcards,
-    progress: {
-      questionsAnswered: 0,
-      questionsCorrect: 0,
-      flashcardsReviewed: 0,
-      flashcardsRemembered: 0,
-    }
-  };
 }
