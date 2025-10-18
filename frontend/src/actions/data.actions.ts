@@ -16,7 +16,6 @@ export async function generateExplanation(topic: string, mode: StudyMode): Promi
         stage: 'explain',
         prompt: 'Explain this topic: ' + topic
       }),
-      cache: 'force-cache'
     });
 
     if (!response.ok) {
@@ -49,7 +48,6 @@ export async function generateQuestions(topic: string, mode: StudyMode): Promise
         stage: 'quiz',
         prompt: ` Generate 3 questions related to this topic: ${topic}`
       }),
-      cache: 'force-cache'
 
     });
 
@@ -84,7 +82,6 @@ export async function generateFlashcards(topic: string, mode: StudyMode): Promis
         prompt: ` Generate 4 flashcards related to this topic: ${topic}`
 
       }),
-      cache: 'force-cache'
 
     });
 
@@ -93,7 +90,6 @@ export async function generateFlashcards(topic: string, mode: StudyMode): Promis
     }
 
     const data = await response.json();
-    console.log(data, 'data')
     return data.flashcards
 
 

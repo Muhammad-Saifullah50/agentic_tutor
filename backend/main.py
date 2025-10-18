@@ -33,15 +33,11 @@ def root():
 async def send_message(request: Request):
     try:
         body = await request.json()
-        print("Incoming body:", body)
-        print("AGENTOPS_API_KEY present:", bool(agentops_api_key))
-        print("triage_agent:", triage_agent)
-        print("Runner:", Runner)
 
         agentops.init(agentops_api_key)
         result = await Runner.run(triage_agent, input=body.get('prompt'))
 
-        return {"explanation": str(result.final_output)}
+        return result.final_output
 
     except Exception as e:
         import traceback
