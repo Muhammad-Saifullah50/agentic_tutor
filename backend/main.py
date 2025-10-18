@@ -19,7 +19,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     # Adjust the origins as needed for your frontend application
-    allow_origins=["http://localhost:8080"], # add the vercel url
+    allow_origins=["http://localhost:3000", 'https://agentic-tutor-azure.vercel.app'], # add the vercel url
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
