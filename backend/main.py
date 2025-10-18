@@ -31,23 +31,23 @@ def root():
 
 @app.post('/send-message')
 async def send_message(request: Request):
-    try:
-        body = await request.json()
-        print("Incoming body:", body)
-        print("AGENTOPS_API_KEY present:", bool(agentops_api_key))
-        print("triage_agent:", triage_agent)
-        print("Runner:", Runner)
+    body = await request.json()
+    mode = body.get('mode')
+    stage = body.get('stage')
+    prompt = body.get('prompt')
 
-        agentops.init(agentops_api_key)
-        result = await Runner.run(triage_agent, input=body.get('prompt'))
+    enable_verbose_stdout_logging()
+    set_tracing_disabled(True) 
 
-        return {"explanation": str(result.final_output)}
+    agentops.init(agentops_api_key)
 
-    except Exception as e:
-        import traceback
-        print("❌ Server error:", e)
-        print(traceback.format_exc())
-        return {"error": str(e)}
-
+    result = await Runner.run(
+            triage_agent,
+            # dynamic prompt coming from the api request such as to explain, to generate questions or flashcards
+            input=prompt,
+            context=f'The user is on "{mode} mode and the learning stage is "{stage}".'
+        )
+    
+    return result.final_output
 
     # have to implemenmt input filters while handing off

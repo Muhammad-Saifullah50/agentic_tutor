@@ -31,7 +31,7 @@ export async function generateExplanation(topic: string, mode: StudyMode): Promi
   } catch (error) {
     console.error('Error sending message:', error);
     // You might want to show an error message to the user here
-    return undefined;
+  
   }
 }
 
