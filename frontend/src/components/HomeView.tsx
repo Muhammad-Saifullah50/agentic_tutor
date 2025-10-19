@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./../components/ui/select";
-import { Brain, Sparkles, ArrowRight, Loader2 } from "lucide-react"; // 👈 Added Loader2 icon
+import { Brain, Sparkles, ArrowRight, Loader2 } from "lucide-react"; 
 import { StudyMode } from "./../types";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";

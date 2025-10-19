@@ -5,6 +5,7 @@ import { QuizView } from "../../../components/QuizView";
 import { ReviewView } from "../../../components/ReviewView";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
+import { Suspense } from "react";
 
 type LessonPageParams = {
     topic?: string;
@@ -72,16 +73,29 @@ export default async function LessonPage({
 
     if (stage === "explain" && explanation) {
         return (
-            <ExplainView key="explain" topic={topic!} explanation={explanation} />
+            <Suspense fallback={<div>Loading...</div>}>
+
+                <ExplainView key="explain" topic={topic!} explanation={explanation} />
+            </Suspense>
         );
     }
 
     if (stage === "quiz" && questions) {
-        return <QuizView key="quiz" questions={questions} />;
+        return (
+            <Suspense fallback={<div>Loading...</div>}>
+
+                <QuizView key="quiz" questions={questions} />
+            </Suspense>
+        );
     }
 
     if (stage === "review" && flashcards) {
-        return <ReviewView key="review" flashcards={flashcards} />;
+        return (
+            <Suspense fallback={<div>Loading...</div>}>
+
+                <ReviewView key="review" flashcards={flashcards} />;
+            </Suspense>
+        )
     }
 
     return (

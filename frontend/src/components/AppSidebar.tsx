@@ -52,7 +52,7 @@ export async function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-2">
-              {lessons.length > 0 ? (
+              {lessons?.length > 0 ? (
                 lessons.map((lesson) => (
                   <SidebarMenuItem key={lesson.id} className=" rounded-lg !hover:bg-gradient-primary  hover:text-primary-foreground transition-colors">
                     <SidebarMenuButton asChild className="hover:bg-gradient-primary capitalize">

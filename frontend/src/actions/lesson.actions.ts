@@ -91,9 +91,7 @@ export const getUserLessons = async () => {
     try {
         const user = await getCurrentUserfromDb();
 
-        if (!user) {
-            throw new Error('User not authenticated');
-        }
+        if (!user) return []
 
         const lessons = await db.lesson.findMany({
             where: {

@@ -13,7 +13,6 @@ export default async function HomePage() {
               key="home"
               initialMode={'beginner'}
             />
-          
         </AnimatePresence>
       </main>
     </div>

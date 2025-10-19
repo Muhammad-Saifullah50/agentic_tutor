@@ -19,12 +19,10 @@ const LessonPage = async ({
 
   const { userId, redirectToSignIn } = await auth()
 
-  // 🔒 Handle unauthenticated users
   if (!userId) {
     return redirectToSignIn()
   }
 
-  // ⚠️ Handle missing or invalid lessonId
   if (!lessonId || typeof lessonId !== "string") {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -86,9 +84,6 @@ const LessonPage = async ({
           isPrevLesson
         />
       )
-
-    default:
-      return null
   }
 }
 
