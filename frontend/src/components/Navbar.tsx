@@ -67,25 +67,7 @@ export function Navbar({
           </div>
         </div>
 
-        {/* Mobile Progress */}
-        <div className="mt-3 flex md:hidden items-center gap-4">
-          {questionsTotal > 0 && (
-            <div className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5">
-              <span className="text-xs font-medium">Quiz:</span>
-              <span className="text-xs text-primary font-semibold">
-                {questionsCorrect}/{questionsTotal}
-              </span>
-            </div>
-          )}
-          {flashcardsTotal > 0 && (
-            <div className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5">
-              <span className="text-xs font-medium">Remembered:</span>
-              <span className="text-xs text-accent font-semibold">
-                {flashcardsRemembered}/{flashcardsTotal}
-              </span>
-            </div>
-          )}
-        </div>
+        
       </div>
     </nav>
   );

@@ -18,7 +18,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           >
             <Navbar />
 
-            <main className="flex flex-1 items-center justify-center md:p-6">
+            <main className="flex flex-1 items-center justify-center     md:p-6">
               {children}
             </main>
           </ThemeProvider>
