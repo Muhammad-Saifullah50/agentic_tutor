@@ -14,6 +14,7 @@ load_dotenv()
 
 
 agentops_api_key = os.getenv("AGENTOPS_API_KEY")
+backend_url = os.getenv("BACKEND_URL")
 
 app = FastAPI()
 
@@ -22,7 +23,7 @@ app.add_middleware(
     # Adjust the origins as needed for your frontend application
     allow_origins=[
         "http://localhost:3000",
-        "https://agentic-tutor-azure.vercel.app",
+        backend_url
     ],  # add the vercel url
     allow_credentials=True,
     allow_methods=["*"],
