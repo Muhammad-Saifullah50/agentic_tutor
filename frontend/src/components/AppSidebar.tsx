@@ -57,8 +57,8 @@ export async function AppSidebar() {
                   .filter(
                     (lesson) =>
                       lesson.explanation &&
-                      lesson.questions &&
-                      lesson.flashcards
+                      lesson.questions !== 0 &&
+                      lesson.flashcards !== 0
                   )
                   .map((lesson) => (
                     <SidebarMenuItem key={lesson.id} className=" rounded-lg !hover:bg-gradient-primary  hover:text-primary-foreground transition-colors">

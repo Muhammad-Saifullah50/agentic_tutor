@@ -29,7 +29,7 @@ export async function generateExplanation(topic: string, mode: StudyMode): Promi
 
   } catch (error) {
     console.error('Error sending message:', error);
-    // You might want to show an error message to the user here
+    return {error: 'There was an error generating explanation' };
   
   }
 }
@@ -46,7 +46,7 @@ export async function generateQuestions(topic: string, mode: StudyMode): Promise
         mode: mode,
         // have to tell the llm to change no. of questions a/c to mode
         stage: 'quiz',
-        prompt: ` Generate 3 questions related to this topic: ${topic}`
+        prompt: ` Generate ${mode === 'beginner' ? 3 : mode === 'practice' ? 4 : 5} questions related to this topic: ${topic}`
       }),
 
     });
@@ -61,7 +61,7 @@ export async function generateQuestions(topic: string, mode: StudyMode): Promise
 
   } catch (error) {
     console.error('Error sending message:', error);
-    return undefined;
+    return {error: 'There was an error generating questions' };
   }
 }
 
@@ -79,7 +79,7 @@ export async function generateFlashcards(topic: string, mode: StudyMode): Promis
         topic: topic.trim(),
         mode: mode,
         stage: 'review',
-        prompt: ` Generate 4 flashcards related to this topic: ${topic}`
+        prompt: ` Generate ${mode === 'beginner' ? 3 : mode === 'practice' ? 4 : 5} flashcards related to this topic: ${topic}`
 
       }),
 
@@ -95,7 +95,8 @@ export async function generateFlashcards(topic: string, mode: StudyMode): Promis
 
   } catch (error) {
     console.error('Error sending message:', error);
-    // You might want to show an error message to the user here
+        // You might want to show an error message to the user here
+    return {error: 'There was an error generating flashcards' };
 
   }
 }
