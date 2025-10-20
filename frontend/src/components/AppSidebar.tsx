@@ -15,12 +15,12 @@ import { Lesson } from "@prisma/client"
 
 export async function AppSidebar() {
   let lessons: Lesson[] = []
-  
+
   try {
     lessons = await getUserLessons()
   } catch (error) {
     console.error("Failed to fetch lessons:", error)
-    
+
   }
 
   return (
@@ -39,7 +39,7 @@ export async function AppSidebar() {
 
         {/* New Lesson Button */}
         <div className="py-4 px-2">
-          <Link 
+          <Link
             href="/"
             className="w-full flex items-center justify-center gap-2 rounded-lg bg-gradient-primary px-4 py-2 text-primary-foreground hover:opacity-90 transition-opacity"
           >
@@ -53,15 +53,22 @@ export async function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-2">
               {lessons?.length > 0 ? (
-                lessons.map((lesson) => (
-                  <SidebarMenuItem key={lesson.id} className=" rounded-lg !hover:bg-gradient-primary  hover:text-primary-foreground transition-colors">
-                    <SidebarMenuButton asChild className="hover:bg-gradient-primary capitalize">
-                      <Link href={`/lesson/${lesson.id}?stage=explain`}>
-                        <span className="truncate ">{lesson.topic}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))
+                lessons
+                  .filter(
+                    (lesson) =>
+                      lesson.explanation &&
+                      lesson.questions &&
+                      lesson.flashcards
+                  )
+                  .map((lesson) => (
+                    <SidebarMenuItem key={lesson.id} className=" rounded-lg !hover:bg-gradient-primary  hover:text-primary-foreground transition-colors">
+                      <SidebarMenuButton asChild className="hover:bg-gradient-primary capitalize">
+                        <Link href={`/lesson/${lesson.id}?stage=explain`}>
+                          <span className="truncate ">{lesson.topic}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>))
+
               ) : (
                 <div className="p-4 text-center text-muted-foreground text-sm">
                   No lessons yet. Create your first lesson!

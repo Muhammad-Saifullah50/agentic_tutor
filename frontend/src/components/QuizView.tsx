@@ -82,6 +82,14 @@ export function QuizView({ questions, isPrevLesson }: QuizViewProps) {
     }
   };
 
+  if (questions.length === 0) {
+    return (
+      <div className="text-center p-6 text-destructive">
+        Failed to load questions. Please try again later.
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

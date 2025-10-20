@@ -23,7 +23,7 @@ interface HomeViewProps {
 export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
   const [topic, setTopic] = useState("");
   const [selectedMode, setSelectedMode] = useState<StudyMode>(initialMode);
-  const [isLoading, setIsLoading] = useState(false); // 👈 new loading state
+  const [isLoading, setIsLoading] = useState(false); 
   const router = useRouter();
   const { isSignedIn, userId } = useAuth();
 
@@ -37,7 +37,7 @@ export function HomeView({ initialMode = "beginner" }: HomeViewProps) {
     }
 
     try {
-      setIsLoading(true); // 👈 start loading
+      setIsLoading(true); 
 
       const lesson = await createLesson(topic.trim(), userId!, selectedMode);
 

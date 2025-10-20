@@ -21,6 +21,7 @@ export function ExplainView({ topic, explanation, isPrevLesson }: ExplainViewPro
   const pathname = usePathname();
   const { isSignedIn } = useAuth();
 
+
   const handleNext = async () => {
     try {
       setIsLoading(true); // 👈 start loading
@@ -52,6 +53,13 @@ export function ExplainView({ topic, explanation, isPrevLesson }: ExplainViewPro
     }
   };
 
+    if (!explanation) {
+    return (
+      <div className="text-center p-6 text-destructive">
+        Failed to load explanation. Please try again later.
+      </div>
+    );
+  }
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

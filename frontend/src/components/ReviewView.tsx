@@ -135,6 +135,13 @@ export function ReviewView({ flashcards,isPrevLesson }: ReviewViewProps) {
   }
 
   
+  if (!flashcards || flashcards.length === 0) {
+    return (
+      <div className="text-center p-6 text-destructive">
+        No flashcards available for review.
+      </div>
+    );
+  }
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
