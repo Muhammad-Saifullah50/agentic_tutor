@@ -109,7 +109,7 @@ export function ReviewView({ flashcards,isPrevLesson }: ReviewViewProps) {
             You've completed all flashcards in this session
           </p>
 
-          <div className="grid grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
             <div className="rounded-lg bg-secondary p-6">
               <p className="text-3xl font-bold text-success">{rememberedCount}</p>
               <p className="text-sm text-muted-foreground mt-1">Remembered</p>
@@ -120,7 +120,7 @@ export function ReviewView({ flashcards,isPrevLesson }: ReviewViewProps) {
             </div>
           </div>
 
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
            {!isPrevLesson && <Button onClick={handleRestart} size="lg" className="bg-gradient-primary hover:opacity-90">
               <RotateCcw className="mr-2 h-5 w-5" />
               Review Again
