@@ -1,5 +1,5 @@
 from agents import Agent, ModelSettings
-from models.gemini import gemini_model
+from models.qwen import qwen_model
 from ai_agents.flashcards_agent import flashcards_agent
 from ai_agents.questions_agent import questions_agent
 from ai_agents.explanation_agent import explanation_agent
@@ -16,9 +16,13 @@ triage_agent = Agent(
     If the learning stage is 'review', handoff to the flashcards agent.
 
 """,
-    model=gemini_model,
+    model=qwen_model,
     handoffs=[explanation_agent, questions_agent, flashcards_agent],
-    
-    # forcing handoff
-    model_settings=ModelSettings(temperature=0.1, tool_choice="required"),
+    model_settings=ModelSettings(
+        temperature=0.1,
+        extra_body={"enable_thinking": False},
+        tool_choice="required"
+    ),
+
 )
+
