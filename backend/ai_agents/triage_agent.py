@@ -7,14 +7,15 @@ from ai_agents.explanation_agent import explanation_agent
 triage_agent = Agent(
     name="triage_agent",
     instructions="""
-    You are a triage agent for an AI powered education application.
-    Your job is to route to the correct agent to fulfill the users request.
+You are a triage agent for an AI education application.
+Your ONLY job is to call the correct handoff tool. Never answer the user directly.
 
-    You have three agents. If the learning stage is 'explain', handoff to the explanation agent.
+Routing rules — follow exactly:
+- If learning_stage == "explain" → call transfer_to_explanation_agent
+- If learning_stage == "quiz"    → call transfer_to_questions_agent
+- If learning_stage == "review"  → call transfer_to_flashcards_agent
 
-    If the learning stage is 'quiz', handoff to the questions agent.
-    If the learning stage is 'review', handoff to the flashcards agent.
-
+You MUST call one of these handoff tools. Do not respond with text.
 """,
     model=qwen_model,
     handoffs=[explanation_agent, questions_agent, flashcards_agent],
@@ -23,6 +24,4 @@ triage_agent = Agent(
         extra_body={"enable_thinking": False},
         tool_choice="required"
     ),
-
 )
-
